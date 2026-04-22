@@ -40,12 +40,50 @@
 
 <body>
 
-<div class="topbar">♻️ Waste Sorting Guide</div>
+<div class="topbar" id="pageTitle">♻️ Waste Sorting Guide</div>
 
-<iframe 
-  src="wastesortingguide2024.pdf"
-  scrolling="yes">
-</iframe>
+<div class="container">
+
+  <!-- Optional button (better UX on mobile) -->
+  <a class="btn" id="openBtn" href="wastesortingguide2024.pdf" target="_blank">
+    Open Full PDF
+  </a>
+
+  <!-- PDF viewer -->
+  <iframe id="contentFrame" src="wastesortingguide2024.pdf#toolbar=0&view=FitH"></iframe>
+
+</div>
+
+<script>
+  const routes = {
+    glass: { title: 'Glass', file: 'glass.html' },
+    metal: { title: 'Metal', file: 'metal.html' },
+    paper: { title: 'Paper & Cardboard', file: 'paper.html' },
+    plastic: { title: 'Plastic', file: 'plastic.html' },
+    foodwaste: { title: 'Food Waste', file: 'foodwaste.html' },
+    residualwaste: { title: 'Residual Waste', file: 'residualwaste.html' }
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const selectedBin = (params.get('bin') || '').toLowerCase();
+  const selectedPage = (params.get('page') || '').toLowerCase();
+  const selectedHash = decodeURIComponent((window.location.hash || '').replace('#', '')).toLowerCase();
+
+  const pageTitle = document.getElementById('pageTitle');
+  const openBtn = document.getElementById('openBtn');
+  const contentFrame = document.getElementById('contentFrame');
+
+  const routeByBin = routes[selectedBin] || routes[selectedHash] || null;
+  const routeByPage = Object.values(routes).find((route) => route.file.toLowerCase() === selectedPage) || null;
+  const route = routeByBin || routeByPage;
+
+  if (route) {
+    pageTitle.textContent = `♻️ ${route.title} Guide`;
+    openBtn.textContent = 'Open Full Page';
+    openBtn.href = route.file;
+    contentFrame.src = route.file;
+  }
+</script>
 
 </body>
 </html>
