@@ -1,16 +1,99 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Waste Guide</title>
+  <meta charset="UTF-8">
+  <title>Waste QR Codes</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .title {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .qr {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    small {
+      font-size: 11px;
+      color: #777;
+      word-break: break-all;
+    }
+  </style>
 </head>
-<body style="font-family:Arial;text-align:center;padding:40px;">
 
-<h2>♻️ Waste Sorting Guide</h2>
+<body>
 
-<a href="wastesortingguide2024.pdf" target="_blank"
-   style="padding:12px 20px;background:#2e7d32;color:white;text-decoration:none;border-radius:6px;">
-  Open Full Guide (PDF)
-</a>
+<h1>♻️ Waste QR Codes</h1>
+
+<div class="grid" id="grid"></div>
+
+<script>
+  const BASE = "https://rachusharma.github.io/magicbin";
+
+  const bins = [
+    { file: "plastic.jpg", name: "Plastic" },
+    { file: "glass.jpg", name: "Glass" },
+    { file: "metal.jpg", name: "Metal" },
+    { file: "food.jpg", name: "Food Waste" },
+    { file: "residual.jpg", name: "Residual Waste" },
+    { file: "paper.jpg", name: "Paper" },
+    { file: "wastesortingguide2024.pdf", name: "Full Guide (PDF)" }
+  ];
+
+  const grid = document.getElementById("grid");
+
+  bins.forEach((bin, i) => {
+    const url = `${BASE}/${bin.file}`;
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="title">${bin.name}</div>
+      <div class="qr" id="qr${i}"></div>
+      <small>${url}</small>
+    `;
+
+    grid.appendChild(card);
+
+    new QRCode(document.getElementById(`qr${i}`), {
+      text: url,
+      width: 180,
+      height: 180,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  });
+</script>
 
 </body>
 </html>
