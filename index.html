@@ -2,18 +2,13 @@
 <html>
 <head>
   <meta charset="UTF-8">
-
-  <!-- ✅ Required for mobile scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Waste Guide</title>
-
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       text-align: center;
-      overflow: hidden; /* prevents double scrolling on mobile */
     }
 
     .topbar {
@@ -27,10 +22,9 @@
     iframe {
       border: none;
       width: 100%;
-      height: calc(100vh - 50px); /* full screen minus header */
+      height: calc(100vh - 50px);
     }
 
-    /* 📱 Mobile tweaks */
     @media (max-width: 600px) {
       .topbar {
         font-size: 16px;
@@ -48,9 +42,9 @@
 
 <div class="topbar">♻️ Waste Sorting Guide</div>
 
-<!-- 🔧 Improved PDF rendering settings -->
 <iframe 
-  src="wastesortingguide2024.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width">
+  src="wastesortingguide2024.pdf"
+  scrolling="yes">
 </iframe>
 
 </body>
