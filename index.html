@@ -146,17 +146,20 @@
 </div>
 
 <script>
+  const PDF_FILE = 'wastesortingguide2024.pdf';
+
   const routes = {
-    glass: { title: 'Glass', sectionId: 'section-glass' },
-    metal: { title: 'Metal', sectionId: 'section-metal' },
-    paper: { title: 'Paper & Cardboard', sectionId: 'section-paper' },
-    plastic: { title: 'Plastic', sectionId: 'section-plastic' },
-    foodwaste: { title: 'Food Waste', sectionId: 'section-foodwaste' },
-    residualwaste: { title: 'Residual Waste', sectionId: 'section-residualwaste' }
+    glass: { title: 'Glass', sectionId: 'section-glass', page: 1 },
+    metal: { title: 'Metal', sectionId: 'section-metal', page: 2 },
+    paper: { title: 'Paper & Cardboard', sectionId: 'section-paper', page: 3 },
+    plastic: { title: 'Plastic', sectionId: 'section-plastic', page: 4 },
+    foodwaste: { title: 'Food Waste', sectionId: 'section-foodwaste', page: 5 },
+    residualwaste: { title: 'Residual Waste', sectionId: 'section-residualwaste', page: 6 }
   };
 
   const params = new URLSearchParams(window.location.search);
   const selectedBin = (params.get('bin') || '').toLowerCase();
+  const selectedPage = Number.parseInt(params.get('page') || '', 10);
   const selectedHash = decodeURIComponent((window.location.hash || '').replace('#', '')).toLowerCase();
 
   const pageTitle = document.getElementById('pageTitle');
@@ -166,6 +169,15 @@
   const contentFrame = document.getElementById('contentFrame');
 
   const route = routes[selectedBin] || routes[selectedHash] || null;
+
+  function getPdfUrl(page) {
+    const validPage = Number.isInteger(page) && page > 0 ? page : null;
+    if (!validPage) {
+      return `${PDF_FILE}#toolbar=0&view=FitH`;
+    }
+
+    return `${PDF_FILE}#page=${validPage}&toolbar=0&view=FitH`;
+  }
 
   function hideAllSections() {
     Object.values(routes).forEach((r) => {
@@ -177,8 +189,11 @@
   }
 
   if (route) {
+    const pageFromRoute = route.page;
+    const pageToShow = Number.isInteger(selectedPage) && selectedPage > 0 ? selectedPage : pageFromRoute;
+
     pageTitle.textContent = `♻️ ${route.title} Guide`;
-    statusText.textContent = `Showing ${route.title} from this original index page.`;
+    statusText.textContent = `Showing ${route.title} from the PDF guide (page ${pageToShow}).`;
     hideAllSections();
 
     const selectedSection = document.getElementById(route.sectionId);
@@ -187,8 +202,18 @@
     }
 
     sectionHost.classList.remove('hidden');
-    contentFrame.classList.add('hidden');
-    openBtn.classList.add('hidden');
+    contentFrame.classList.remove('hidden');
+    openBtn.classList.remove('hidden');
+
+    const selectedPdfUrl = getPdfUrl(pageToShow);
+    contentFrame.src = selectedPdfUrl;
+    openBtn.href = selectedPdfUrl;
+    openBtn.textContent = `Open ${route.title} PDF Page`;
+  } else {
+    const defaultPdfUrl = getPdfUrl(null);
+    contentFrame.src = defaultPdfUrl;
+    openBtn.href = PDF_FILE;
+    openBtn.textContent = 'Open Full PDF';
   }
 </script>
 

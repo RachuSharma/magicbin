@@ -71,49 +71,55 @@
       name: 'Glass',
       emoji: '🫙',
       color: '#1a6b3c',
-      sub: 'Loose lid · Emptied and scraped'
+      sub: 'Loose lid · Emptied and scraped',
+      page: 1
     },
     {
       key: 'metal',
       name: 'Metal',
       emoji: '🥫',
       color: '#7b3f00',
-      sub: 'Emptied and scraped clean'
+      sub: 'Emptied and scraped clean',
+      page: 2
     },
     {
       key: 'paper',
       name: 'Paper & Cardboard',
       emoji: '📰',
       color: '#1a3a6b',
-      sub: 'Clean and dry'
+      sub: 'Clean and dry',
+      page: 3
     },
     {
       key: 'plastic',
       name: 'Plastic',
       emoji: '♻️',
       color: '#4a1580',
-      sub: 'Emptied and cleaned · Place loosely'
+      sub: 'Emptied and cleaned · Place loosely',
+      page: 4
     },
     {
       key: 'foodwaste',
       name: 'Food Waste',
       emoji: '🍎',
       color: '#2d6a2d',
-      sub: 'In green bag with a knot'
+      sub: 'In green bag with a knot',
+      page: 5
     },
     {
       key: 'residualwaste',
       name: 'Residual Waste',
       emoji: '🗑️',
       color: '#333333',
-      sub: 'In bag with a knot (bags must be bought)'
+      sub: 'In bag with a knot (bags must be bought)',
+      page: 6
     }
   ];
 
   const container = document.getElementById('cards');
 
   bins.forEach((bin, i) => {
-    const url = `${BASE}/${LANDING_PAGE}#${encodeURIComponent(bin.key)}`;
+    const url = `${BASE}/${LANDING_PAGE}?bin=${encodeURIComponent(bin.key)}&page=${encodeURIComponent(bin.page)}`;
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
