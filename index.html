@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- ✅ Makes it responsive on mobile -->
+  <!-- ✅ Required for mobile scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Waste Guide</title>
@@ -12,55 +12,33 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
       text-align: center;
+      overflow: hidden; /* prevents double scrolling on mobile */
     }
 
     .topbar {
       background: #2e7d32;
       color: white;
-      padding: 14px;
+      padding: 12px;
       font-size: 18px;
       font-weight: bold;
-    }
-
-    .container {
-      padding: 10px;
     }
 
     iframe {
       border: none;
       width: 100%;
-      height: calc(100vh - 70px);
-      border-radius: 8px;
-      background: white;
+      height: calc(100vh - 50px); /* full screen minus header */
     }
 
-    .btn {
-      display: inline-block;
-      margin: 10px 0;
-      padding: 10px 15px;
-      background: #1976d2;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    /* 📱 Mobile optimization */
+    /* 📱 Mobile tweaks */
     @media (max-width: 600px) {
       .topbar {
         font-size: 16px;
-        padding: 12px;
+        padding: 10px;
       }
 
       iframe {
-        height: calc(100vh - 90px);
-      }
-
-      .btn {
-        width: 90%;
-        font-size: 15px;
+        height: calc(100vh - 45px);
       }
     }
   </style>
@@ -70,17 +48,10 @@
 
 <div class="topbar">♻️ Waste Sorting Guide</div>
 
-<div class="container">
-
-  <!-- Optional button (better UX on mobile) -->
-  <a class="btn" href="wastesortingguide2024.pdf" target="_blank">
-    Open Full PDF
-  </a>
-
-  <!-- PDF viewer -->
-  <iframe src="wastesortingguide2024.pdf#toolbar=0&view=FitH"></iframe>
-
-</div>
+<!-- 🔧 Improved PDF rendering settings -->
+<iframe 
+  src="wastesortingguide2024.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width">
+</iframe>
 
 </body>
 </html>
