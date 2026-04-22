@@ -62,8 +62,21 @@
 <div class="grid" id="cards"></div>
 
 <script>
-  const BASE = 'https://rachusharma.github.io/magicbin';
-  const LANDING_PAGE = 'index.html';
+  const PUBLIC_BASE = 'https://rachusharma.github.io/magicbin';
+  const LANDING_PAGE = 'wastesorting.html';
+
+  function getBaseUrl() {
+    const isWeb = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+    if (!isWeb) {
+      return PUBLIC_BASE;
+    }
+
+    const path = window.location.pathname || '/';
+    const basePath = path.slice(0, path.lastIndexOf('/'));
+    return `${window.location.origin}${basePath}`;
+  }
+
+  const BASE = getBaseUrl();
 
   const bins = [
     {
