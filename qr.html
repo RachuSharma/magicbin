@@ -1,162 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Waste Sorting – QR Codes</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap');
+  <meta charset="UTF-8">
+  <title>Waste QR Codes</title>
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #f7f5f0; font-family: 'DM Sans', sans-serif; padding: 32px 20px 60px; }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  .page-title { text-align: center; margin-bottom: 40px; }
-  .page-title h1 { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 900; color: #111; letter-spacing: -1.5px; margin-bottom: 8px; }
-  .page-title p { color: #666; font-size: 1rem; }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+      padding: 20px;
+    }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+    h1 {
+      margin-bottom: 30px;
+    }
 
-  .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; padding-bottom: 20px; transition: transform 0.2s; }
-  .card:hover { transform: translateY(-3px); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
 
-  .card-header { width: 100%; padding: 22px 20px 18px; text-align: center; color: white; }
-  .card-emoji { font-size: 44px; margin-bottom: 6px; }
-  .card-name { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px; }
-  .card-sub { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; font-weight: 500; }
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+    }
 
-  .qr-wrap { margin: 18px 0 8px; padding: 10px; background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-  .qr-wrap canvas, .qr-wrap img { display: block; border-radius: 6px; }
+    .title {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
 
-  .scan-hint { font-size: 0.75rem; color: #aaa; text-align: center; letter-spacing: 0.5px; padding: 0 16px; }
+    .qr {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
 
-  .url-note { font-size: 0.7rem; color: #bbb; margin-top: 6px; text-align: center; padding: 0 12px; word-break: break-all; }
-
-  .cut-line { text-align: center; color: #ccc; font-size: 0.72rem; letter-spacing: 3px; margin: 28px 0; position: relative; }
-  .cut-line::before, .cut-line::after { content: ''; position: absolute; top: 50%; width: 42%; border-top: 1px dashed #ddd; }
-  .cut-line::before { left: 0; }
-  .cut-line::after { right: 0; }
-
-  .instructions { max-width: 900px; margin: 40px auto 0; background: white; border-radius: 16px; padding: 24px 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
-  .instructions h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; color: #111; margin-bottom: 14px; }
-  .step { display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.92rem; color: #444; line-height: 1.5; }
-  .step-num { width: 24px; height: 24px; border-radius: 50%; background: #111; color: white; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-
-  .notice { background: #fff8e1; border: 1.5px solid #ffe082; border-radius: 12px; padding: 14px 18px; max-width: 900px; margin: 24px auto 0; font-size: 0.88rem; color: #6d4c00; line-height: 1.6; }
-  .notice strong { color: #b8860b; }
-
-  @media print {
-    body { background: white; padding: 10px; }
-    .card { box-shadow: 0 0 0 1px #ddd; }
-    .instructions, .notice { display: none; }
-  }
-</style>
+    small {
+      font-size: 11px;
+      color: #777;
+      word-break: break-all;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="page-title">
-  <h1>♻️ Waste Sorting</h1>
-  <p>Scan the QR code on your bin to see exactly what goes inside</p>
-</div>
+<h1>♻️ Waste QR Codes</h1>
 
-<div class="grid" id="cards"></div>
+<div class="grid" id="grid"></div>
 
 <script>
-  const PUBLIC_BASE = 'https://rachusharma.github.io/magicbin';
-  const LANDING_PAGE = 'wastesorting.html';
-
-  function getBaseUrl() {
-    const isWeb = window.location.protocol === 'http:' || window.location.protocol === 'https:';
-    if (!isWeb) {
-      return PUBLIC_BASE;
-    }
-
-    const path = window.location.pathname || '/';
-    const basePath = path.slice(0, path.lastIndexOf('/'));
-    return `${window.location.origin}${basePath}`;
-  }
-
-  const BASE = getBaseUrl();
+  const BASE = "https://rachusharma.github.io/magicbin";
 
   const bins = [
-    {
-      key: 'glass',
-      name: 'Glass',
-      emoji: '🫙',
-      color: '#1a6b3c',
-      sub: 'Loose lid · Emptied and scraped',
-      page: 1
-    },
-    {
-      key: 'metal',
-      name: 'Metal',
-      emoji: '🥫',
-      color: '#7b3f00',
-      sub: 'Emptied and scraped clean',
-      page: 2
-    },
-    {
-      key: 'paper',
-      name: 'Paper & Cardboard',
-      emoji: '📰',
-      color: '#1a3a6b',
-      sub: 'Clean and dry',
-      page: 3
-    },
-    {
-      key: 'plastic',
-      name: 'Plastic',
-      emoji: '♻️',
-      color: '#4a1580',
-      sub: 'Emptied and cleaned · Place loosely',
-      page: 4
-    },
-    {
-      key: 'foodwaste',
-      name: 'Food Waste',
-      emoji: '🍎',
-      color: '#2d6a2d',
-      sub: 'In green bag with a knot',
-      page: 5
-    },
-    {
-      key: 'residualwaste',
-      name: 'Residual Waste',
-      emoji: '🗑️',
-      color: '#333333',
-      sub: 'In bag with a knot (bags must be bought)',
-      page: 6
-    }
+    { file: "plastic.jpg", name: "Plastic" },
+    { file: "glass.jpg", name: "Glass" },
+    { file: "metal.jpg", name: "Metal" },
+    { file: "food.jpg", name: "Food Waste" },
+    { file: "residual.jpg", name: "Residual Waste" },
+    { file: "paper.jpg", name: "Paper" },
+    { file: "manual.jpg", name: "Manual / Mixed Waste" }
   ];
 
-  const container = document.getElementById('cards');
+  const grid = document.getElementById("grid");
 
   bins.forEach((bin, i) => {
-    const url = `${BASE}/${LANDING_PAGE}?bin=${encodeURIComponent(bin.key)}&page=${encodeURIComponent(bin.page)}`;
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-header" style="background:${bin.color}">
-        <div class="card-emoji">${bin.emoji}</div>
-        <div class="card-name">${bin.name}</div>
-        <div class="card-sub">${bin.sub}</div>
-      </div>
-      <div class="qr-wrap" id="qr${i}"></div>
-      <div class="scan-hint">SCAN TO SEE WHAT BELONGS HERE</div>
-      <div class="url-note">${url}</div>
-    `;
-    container.appendChild(card);
+    const url = `${BASE}/${bin.file}`;
 
-    setTimeout(() => {
-      new QRCode(document.getElementById(`qr${i}`), {
-        text: url,
-        width: 160,
-        height: 160,
-        colorDark: bin.color,
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }, i * 100);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="title">${bin.name}</div>
+      <div class="qr" id="qr${i}"></div>
+      <small>${url}</small>
+    `;
+
+    grid.appendChild(card);
+
+    new QRCode(document.getElementById(`qr${i}`), {
+      text: url,
+      width: 180,
+      height: 180,
+      correctLevel: QRCode.CorrectLevel.H
+    });
   });
 </script>
 
