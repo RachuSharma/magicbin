@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waste Sorting – QR Codes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f7f5f0; font-family: 'DM Sans', sans-serif; padding: 32px 20px 60px; }
+
+  .page-title { text-align: center; margin-bottom: 40px; }
+  .page-title h1 { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 900; color: #111; letter-spacing: -1.5px; margin-bottom: 8px; }
+  .page-title p { color: #666; font-size: 1rem; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+
+  .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; padding-bottom: 20px; transition: transform 0.2s; }
+  .card:hover { transform: translateY(-3px); }
+
+  .card-header { width: 100%; padding: 22px 20px 18px; text-align: center; color: white; }
+  .card-emoji { font-size: 44px; margin-bottom: 6px; }
+  .card-name { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px; }
+  .card-sub { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; font-weight: 500; }
+
+  .qr-wrap { margin: 18px 0 8px; padding: 10px; background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .qr-wrap canvas, .qr-wrap img { display: block; border-radius: 6px; }
+
+  .scan-hint { font-size: 0.75rem; color: #aaa; text-align: center; letter-spacing: 0.5px; padding: 0 16px; }
+
+  .url-note { font-size: 0.7rem; color: #bbb; margin-top: 6px; text-align: center; padding: 0 12px; word-break: break-all; }
+
+  .cut-line { text-align: center; color: #ccc; font-size: 0.72rem; letter-spacing: 3px; margin: 28px 0; position: relative; }
+  .cut-line::before, .cut-line::after { content: ''; position: absolute; top: 50%; width: 42%; border-top: 1px dashed #ddd; }
+  .cut-line::before { left: 0; }
+  .cut-line::after { right: 0; }
+
+  .instructions { max-width: 900px; margin: 40px auto 0; background: white; border-radius: 16px; padding: 24px 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
+  .instructions h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; color: #111; margin-bottom: 14px; }
+  .step { display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.92rem; color: #444; line-height: 1.5; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: #111; color: white; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  .notice { background: #fff8e1; border: 1.5px solid #ffe082; border-radius: 12px; padding: 14px 18px; max-width: 900px; margin: 24px auto 0; font-size: 0.88rem; color: #6d4c00; line-height: 1.6; }
+  .notice strong { color: #b8860b; }
+
+  @media print {
+    body { background: white; padding: 10px; }
+    .card { box-shadow: 0 0 0 1px #ddd; }
+    .instructions, .notice { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>♻️ Waste Sorting</h1>
+  <p>Scan the QR code on your bin to see exactly what goes inside</p>
+</div>
+
+<div class="grid" id="cards"></div>
+
+<script>
+  const BASE = 'https://rachusharma.github.io/magicbin/'; 
+
+  const bins = [
+    {
+      name: 'Glass',
+      emoji: '🫙',
+      color: '#1a6b3c',
+      sub: 'Loose lid · Emptied and scraped',
+      file: 'glass.html'
+    },
+    {
+      name: 'Metal',
+      emoji: '🥫',
+      color: '#7b3f00',
+      sub: 'Emptied and scraped clean',
+      file: 'metal.html'
+    },
+    {
+      name: 'Paper & Cardboard',
+      emoji: '📰',
+      color: '#1a3a6b',
+      sub: 'Clean and dry',
+      file: 'paper.html'
+    },
+    {
+      name: 'Plastic',
+      emoji: '♻️',
+      color: '#4a1580',
+      sub: 'Emptied and cleaned · Place loosely',
+      file: 'plastic.html'
+    },
+    {
+      name: 'Food Waste',
+      emoji: '🍎',
+      color: '#2d6a2d',
+      sub: 'In green bag with a knot',
+      file: 'food-waste.html'
+    },
+    {
+      name: 'Residual Waste',
+      emoji: '🗑️',
+      color: '#333333',
+      sub: 'In bag with a knot (bags must be bought)',
+      file: 'residual-waste.html'
+    }
+  ];
+
+  const container = document.getElementById('cards');
+
+  bins.forEach((bin, i) => {
+    const url = `${BASE}/${bin.file}`;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header" style="background:${bin.color}">
+        <div class="card-emoji">${bin.emoji}</div>
+        <div class="card-name">${bin.name}</div>
+        <div class="card-sub">${bin.sub}</div>
+      </div>
+      <div class="qr-wrap" id="qr${i}"></div>
+      <div class="scan-hint">SCAN TO SEE WHAT BELONGS HERE</div>
+      <div class="url-note">${url}</div>
+    `;
+    container.appendChild(card);
+
+    setTimeout(() => {
+      new QRCode(document.getElementById(`qr${i}`), {
+        text: url,
+        width: 160,
+        height: 160,
+        colorDark: bin.color,
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }, i * 100);
+  });
+</script>
+
+</body>
+</html>
